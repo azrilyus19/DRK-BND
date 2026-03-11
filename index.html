@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DRK BNND</title>
+  <style>
+    body {
+      background: #000;
+      color: #00ffcc;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh; 
+      margin: 0;
+      padding: 20px 0; 
+      overflow-y: auto; 
+    }
+
+    /* --- SKRIN WELCOME --- */
+    #welcome-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    #welcome-screen h1 {
+      color: #00ffcc;
+      font-size: 24px;
+      animation: pulse 1.5s infinite;
+      text-align: center;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.1); opacity: 0.7; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .logo {
+      font-size: 48px;
+      font-weight: bold;
+      background: linear-gradient(90deg, #00ffcc, #00e676);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: float 2s ease-in-out infinite;
+      margin-bottom: 30px;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .container {
+      background: #111;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px #00ffcc88;
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+      margin-bottom: 30px; 
+    }
+    input, button {
+      padding: 12px;
+      margin: 10px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      width: 100%;
+      box-sizing: border-box; 
+      box-shadow: 0 0 10px #00ffcc33;
+      transition: 0.3s;
+    }
+    input {
+      background: #1a1a1a;
+      color: #00ffcc;
+    }
+    button {
+      background: #00ffcc;
+      color: #000;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #00e676;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+    li {
+      background: #222;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: grab;
+      user-select: none;
+      box-shadow: 0 0 8px #00ffcc33;
+      word-break: break-all;
+    }
+    li:hover {
+      background: #333;
+    }
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #ff5722;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 10px;
+      display: none;
+      z-index: 1000;
+      box-shadow: 0 0 10px #ff572288;
+    }
+
+    .video-container {
+      width: 100%;
+      max-width: 500px;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 0 20px #00ffcc88;
+      background: #111;
+      padding: 10px;
+      box-sizing: border-box;
+      text-align: center;
+    }
+    .video-container video {
+      width: 100%;
+      border-radius: 10px;
+      display: block;
+    }
+    
+    @media (max-width: 600px) {
+      .container, .video-container {
+        width: 90%;
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SKRIN WELCOME -->
+  <div id="welcome-screen" onclick="mulakanLagu()">
+    <h1><br>Tap Screen<br></h1>
+  </div>
+
+  <div class="logo">⚜️BAN WA⚜️</div>
+  
+  <div class="container">
+    <input type="text" id="phoneNumber" placeholder="Masukkan nomor (terget +62xxxxxx)" />
+    <button onclick="banNumber()">BAN BY YANZZ✓™</button>
+    <button onclick="exportList()">Export Banned List</button>
+    <ul id="bannedList"></ul>
+  </div>
+
+  <div class="video-container">
+    <!-- TAMBAH ID PADA VIDEO -->
+    <video id="videoLagu" controls loop>
+      <!-- PASTIKAN LETAK NAMA FAIL VIDEO AWAK BALIK KAT BAWAH NI -->
+      <source src="video_anda.mp4" type="video/mp4">
+    </video>
+  </div>
+
+  <div class="notification" id="notification"></div>
+
+  <script>
+    // --- FUNGSI UNTUK HILANGKAN SKRIN DAN MAIN VIDEO AUTOMATIK ---
+    function mulakanLagu() {
+      // Hilangkan skrin hitam
+      document.getElementById('welcome-screen').style.display = 'none';
+      
+      // Mainkan video beserta lagu
+      let video = document.getElementById('videoLagu');
+      video.play();
+    }
+
+    // --- KOD ASAL BAN WA ---
+    const BANNED_KEY = 'whatsapp_banned_list';
+    let bannedNumbers = JSON.parse(localStorage.getItem(BANNED_KEY) || '[]');
+
+    function showNotification(message) {
+      const notification = document.getElementById('notification');
+      notification.innerText = message;
+      notification.style.display = 'block';
+      setTimeout(() => notification.style.display = 'none', 3000);
+    }
+
+    function banNumber() {
+      const number = document.getElementById('phoneNumber').value.trim();
+      if (validateNumber(number)) {
+        if (!bannedNumbers.includes(number)) {
+          bannedNumbers.push(number);
+          localStorage.setItem(BANNED_KEY, JSON.stringify(bannedNumbers));
+          updateBannedList();
+          showNotification('✅ Nomor berhasil diblokir!');
+        } else {
+          showNotification('⚠️ Nomor sudah ada di daftar banned!');
+        }
+      } else {
+        showNotification('❌ Format nomor salah! terus kan report (target +62xxxxxxxx)');
+      }
+    }
+
+    function validateNumber(number) {
+      const regex = /^\+\d{10,15}$/;
+      return regex.test(number);
+    }
+
+    function updateBannedList() {
+      const list = document.getElementById('bannedList');
+      list.innerHTML = '';
+      bannedNumbers.forEach((num, index) => {
+        const li = document.createElement('li');
+        li.draggable = true;
+        li.textContent = num;
+        li.addEventListener('dragstart', (e) => e.dataTransfer.setData('text/plain', index));
+        li.addEventListener('dragover', (e) => e.preventDefault());
+        li.addEventListener('drop', (e) => {
+          e.preventDefault();
+          const fromIndex = e.dataTransfer.getData('text/plain');
+          const toIndex = index;
+          if (fromIndex !== toIndex) {
+            const temp = bannedNumbers[fromIndex];
+            bannedNumbers.splice(fromIndex, 1);
+            bannedNumbers.splice(toIndex, 0, temp);
+            localStorage.setItem(BANNED_KEY, JSON.stringify(bannedNumbers));
+            updateBannedList();
+            showNotification('🔄 Urutan banned list diubah!');
+          }
+        });
+        list.appendChild(li);
+      });
+    }
+
+    function exportList() {
+      if (bannedNumbers.length === 0) {
+        showNotification('⚠️ Tidak ada nomor yang diblokir!');
+        return;
+      }
+      const data = JSON.stringify(bannedNumbers, null, 2);
+      const blob = new Blob([data], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'banned_numbers.json';
+      a.click();
+      URL.revokeObjectURL(url);
+      showNotification('📤 Daftar banned telah diunduh!');
+    }
+
+  </script>
+</body>
+</html>
